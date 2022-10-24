@@ -22,9 +22,87 @@
 	<!-- 드래그 & 드롭 함수 -->
 
 	<script type="text/javascript">
-		window.onload = function (){ $('a').click(function(event){
-			event.preventDefault(); 
-		});
+		window.onload = function (){
+		
+		
+		if (navigator.geolocation) {
+			navigator.geolocation.getCurrentPosition(function (position) {
+				var lat = lat = position.coords.latitude,
+					lon = position.coords.longitude;
+
+
+				//  center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
+				var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+					mapOption = {
+						center: new kakao.maps.LatLng(lat, lon), // 지도의 중심좌표
+						level: 5
+						// 지도의 확대 레벨 
+					};
+
+
+				var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+
+				// 마커를 표시할 위치와 내용을 가지고 있는 객체 배열입니다 
+				var positions = [
+					{
+						content: '<div>나의 현재 위치</div>',
+						latlng: new kakao.maps.LatLng(lat, lon)
+					},
+					{
+						content: '<div>마카로니 공원</div>',
+						latlng: new kakao.maps.LatLng(37.5809194, 127.002413)
+					},
+					{
+						content: '<div>3조의 보금자리</div>',
+						latlng: new kakao.maps.LatLng(37.5834512, 126.999820)
+					},
+					{
+						content: '<div>피자맛집</div>',
+						latlng: new kakao.maps.LatLng(37.5845323, 126.997216)
+					},
+					{
+						content: '<div>낙산공원</div>',
+						latlng: new kakao.maps.LatLng(37.5818113, 127.006307)
+					}
+				];
+
+				for (var i = 0; i < positions.length; i++) {
+					// 마커를 생성합니다
+					var marker = new kakao.maps.Marker({
+						map: map, // 마커를 표시할 지도
+						position: positions[i].latlng // 마커의 위치
+					});
+
+					// 마커에 표시할 인포윈도우를 생성합니다 
+					var infowindow = new kakao.maps.InfoWindow({
+						content: positions[i].content // 인포윈도우에 표시할 내용
+					});
+
+					// 마커에 mouseover 이벤트와 mouseout 이벤트를 등록합니다
+					// 이벤트 리스너로는 클로저를 만들어 등록합니다 
+					// for문에서 클로저를 만들어 주지 않으면 마지막 마커에만 이벤트가 등록됩니다
+					kakao.maps.event.addListener(marker, 'mouseover', makeOverListener(map, marker, infowindow));
+					kakao.maps.event.addListener(marker, 'mouseout', makeOutListener(infowindow));
+				}
+
+				// 인포윈도우를 표시하는 클로저를 만드는 함수입니다 
+				function makeOverListener(map, marker, infowindow) {
+					return function () {
+						infowindow.open(map, marker);
+					};
+				}
+
+				// 인포윈도우를 닫는 클로저를 만드는 함수입니다 
+				function makeOutListener(infowindow) {
+					return function () {
+						infowindow.close();
+					};
+				}
+			});
+		}
+		
+		
+		$('a').click(function(event){event.preventDefault(); });
 	}
 		 
 
@@ -532,93 +610,12 @@
 			<!-- 카카오맵 지도에 내 위치 띄우기(서버 돌려야 실행됨) -->
 			<div id="map" style="width: 85%; height: 350px;"></div>
 			<script type="text/javascript"
-				src="//dapi.kakao.com/v2/maps/sdk.js?appkey=09670140fa73f1e7cde3f5725994c985"></script>
+				src="//dapi.kakao.com/v2/maps/sdk.js?appkey=ae20ffc78d270b6473f02625716b04d5"></script>
 			
 			<!-- map 버튼입니다! -->
 			<button class="button" value="키워드 검색" class="btn btn-light" id = "mapbutton"
 				onclick="window.open('MapAPI.html',map,'width=1000,height=500')">키워드 검색</button>
 			
-			<script>
-				//카카오맵
-				window.onload = function () {
-
-					if (navigator.geolocation) {
-						navigator.geolocation.getCurrentPosition(function (position) {
-							var lat = lat = position.coords.latitude,
-								lon = position.coords.longitude;
-
-
-							//  center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
-							var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
-								mapOption = {
-									center: new kakao.maps.LatLng(lat, lon), // 지도의 중심좌표
-									level: 5
-									// 지도의 확대 레벨 
-								};
-
-
-							var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
-
-							// 마커를 표시할 위치와 내용을 가지고 있는 객체 배열입니다 
-							var positions = [
-								{
-									content: '<div>나의 현재 위치</div>',
-									latlng: new kakao.maps.LatLng(lat, lon)
-								},
-								{
-									content: '<div>마카로니 공원</div>',
-									latlng: new kakao.maps.LatLng(37.5809194, 127.002413)
-								},
-								{
-									content: '<div>3조의 보금자리</div>',
-									latlng: new kakao.maps.LatLng(37.5834512, 126.999820)
-								},
-								{
-									content: '<div>피자맛집</div>',
-									latlng: new kakao.maps.LatLng(37.5845323, 126.997216)
-								},
-								{
-									content: '<div>낙산공원</div>',
-									latlng: new kakao.maps.LatLng(37.5818113, 127.006307)
-								}
-							];
-
-							for (var i = 0; i < positions.length; i++) {
-								// 마커를 생성합니다
-								var marker = new kakao.maps.Marker({
-									map: map, // 마커를 표시할 지도
-									position: positions[i].latlng // 마커의 위치
-								});
-
-								// 마커에 표시할 인포윈도우를 생성합니다 
-								var infowindow = new kakao.maps.InfoWindow({
-									content: positions[i].content // 인포윈도우에 표시할 내용
-								});
-
-								// 마커에 mouseover 이벤트와 mouseout 이벤트를 등록합니다
-								// 이벤트 리스너로는 클로저를 만들어 등록합니다 
-								// for문에서 클로저를 만들어 주지 않으면 마지막 마커에만 이벤트가 등록됩니다
-								kakao.maps.event.addListener(marker, 'mouseover', makeOverListener(map, marker, infowindow));
-								kakao.maps.event.addListener(marker, 'mouseout', makeOutListener(infowindow));
-							}
-
-							// 인포윈도우를 표시하는 클로저를 만드는 함수입니다 
-							function makeOverListener(map, marker, infowindow) {
-								return function () {
-									infowindow.open(map, marker);
-								};
-							}
-
-							// 인포윈도우를 닫는 클로저를 만드는 함수입니다 
-							function makeOutListener(infowindow) {
-								return function () {
-									infowindow.close();
-								};
-							}
-						});
-					}
-				}
-			</script>
 		</div>
 
 		<!-- About Us Section -->
@@ -645,7 +642,7 @@
 					<div class="card-body">
 						<h5 class="card-title">노현중's Page</h5>
 						<p class="card-text">저는 3조의 조원이며 제 이름은 노현중 입니다. </p>
-						<a href="http://192.168.0.84:8090/WebJSP/images/nhj.html" class="btn btn-primary" target="_blank">Go Hyeonjung</a>
+						<a href="https://shguswnd.github.io/nhj6336.github.io/" class="btn btn-primary" target="_blank">Go Hyeonjung</a>
 					</div>
 				</div>
 				<!-- 박예빈 카드 -->
@@ -654,7 +651,7 @@
 					<div class="card-body">
 						<h5 class="card-title">박예빈's Page</h5>
 						<p class="card-text">저는 3조의 조원이며 제 이름은 박예빈 입니다.</p>
-						<a href="http://192.168.0.56:8070/mypage/index.html" class="btn btn-primary" target="_blank">Go Yebin</a>
+						<a href="https://yebin1.github.io/webapp/index.html" class="btn btn-primary" target="_blank">Go Yebin</a>
 					</div>
 				</div>
 				<!-- 노다영 카드 -->
@@ -663,7 +660,7 @@
 					<div class="card-body">
 						<h5 class="card-title">노다영's Page</h5>
 						<p class="card-text">저는 3조의 조원이며 제 이름은 노다영 입니다.</p>
-						<a href="https://github.com/Darang00" class="btn btn-primary" target="_blank">Go Dayoung</a>
+						<a href="https://darang00.github.io/KOSA_IT/WebBasic_Script/main/webapp/Squadfree/index.html" class="btn btn-primary" target="_blank">Go Dayoung</a>
 					</div>
 				</div>
 				<!-- 고윤섭 카드 -->
@@ -672,7 +669,7 @@
 					<div class="card-body">
 						<h5 class="card-title">고윤섭's Page</h5>
 						<p class="card-text">저는 3조의 대장이며 제 이름은 고윤섭 입니다.</p>
-						<a href="http://192.168.30.119:8090/HtmlAPI/HtmlAPI.html" class="btn btn-primary" target="_blank">Go Yunseub</a>
+						<a href="https://achieve97.github.io/" class="btn btn-primary" target="_blank">Go Yunseub</a>
 					</div>
 				</div>
 			</div>
